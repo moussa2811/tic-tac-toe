@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+
+<body class="main flex">
+    <div class="header flex"><h1>Tic Tac Toe Game !</h1></div>
+    <div class="controls flex">
+        <form action="#" class="form">
+            <div class="playerSelection flex">
+                <div class="playerOne flex">
+                    <input type="text" value="Player One" name="p1name" id="p1name">
+                    <label for="isP1Bot">
+                        <input type="checkbox" name="isP1Bot" id="isP1Bot"> Computer
+                    </label>
+                    <input type="color" value="#2ecc71" name="p1color" id="p1color">
+                </div>
+                <h2>Against</h2>
+                <div class="playerTwo flex">
+                    <input type="text" value="Player Two" name="p2name" id="p2name">
+                    <label for="isP2Bot">
+                        <input type="checkbox" name="isP2Bot" id="isP2Bot"> Computer
+                    </label>
+                    <input type="color" value="#fdcb6e" name="p2color" id="p2color">
+                </div>
+            </div>
+            <div class="formBtns flex">
+                <button id="startGame">Start Game</button>
+                <button id="cancel">Cancel</button>
+            </div>
+        </form>
+        <div class="gameBtns flex">
+            <button id="newGame">New Game</button>
+            <button id="restartGame">Restart</button>
+        </div>
+        <div class="messages">Welcome, click on new game to start the game.</div>
+    </div>
+    <div class="game flex">
+        <div class="gameBoard">
+            <div class="tiles" data-position="0"></div>
+            <div class="tiles" data-position="1"></div>
+            <div class="tiles" data-position="2"></div>
+            <div class="tiles" data-position="3"></div>
+            <div class="tiles" data-position="4"></div>
+            <div class="tiles" data-position="5"></div>
+            <div class="tiles" data-position="6"></div>
+            <div class="tiles" data-position="7"></div>
+            <div class="tiles" data-position="8"></div>
+        </div>
+    </div>
+</body>
+<script src="script.js"></script>
+</html>
