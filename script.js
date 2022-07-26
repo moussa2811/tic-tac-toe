@@ -1,6 +1,7 @@
 const formSelector = document.querySelector(".form");
 const message = document.querySelector(".messages");
-const tiles = document.querySelectorAll(".tiles");
+const gameDiv = document.querySelector(".gameBoard");
+const tiles = Array.from(document.querySelectorAll(".tile"));
 
 const newGameBtn = document.querySelector("#newGame");
 const cancelBtn = document.querySelector("#cancel");
@@ -9,7 +10,7 @@ const startGameBtn = document.querySelector("#startGame");
 const restartGameBtn = document.querySelector("#restartGame");
 
 function clearBoard () {
-    Array.from(tiles).forEach(
+    tiles.forEach(
         (tile)=>{
             if(tile.classList.contains("played")){
                 tile.classList.remove("played");
@@ -133,39 +134,38 @@ const Game = (
                     [0,4,8],
                     [2,4,6],
                 ];
-        
+
                 const initBoard = ()=>{
                     for (let i = 0; i < 9; i++) {
                         board[i] = "";
                     }
                 }
 
-                const checkWin = ()=>{
-                    let win = false;
+                const checkWin = (boardTocheck)=>{
+                    const boardCheck = boardTocheck;
                     for (winArray of winBoard) {
                         let a = winArray[0];
                         let b = winArray[1];
                         let c = winArray[2];
-                        if ( board[a] == "" || board[b] == "" || board[c] == "") {
+                        if ( boardCheck[a] == "" || boardCheck[b] == "" || boardCheck[c] == "") {
                             continue;
                         }
-                        else if ( board[a] == board[b] && board[b] == board[c] ) {
-                            win = "win";
-                            break;
+                        if ( boardCheck[a] == boardCheck[b] && boardCheck[b] == boardCheck[c] ) {
+                            return "win";
                         }
                     }
-                    if( !board.includes("") ){
+                    if( !boardCheck.includes("") ){
                         return "tie";
                     }
-                    return win;
+                    return false;
                 };
         
                 const markBoard = (player,position)=>{
                     board[position] = player.getMark();
-                    return checkWin();
+                    return checkWin(board);
                 };
         
-                return {markBoard,initBoard};
+                return {initBoard,board,winBoard,markBoard,checkWin};
             }
         )();
 
@@ -221,9 +221,24 @@ const Game = (
         }
 
         const setCurrentPlayer = ()=>{
+
+            if (gameDiv.classList.contains("cumputerPlaying")) {
+                gameDiv.classList.remove("cumputerPlaying");
+            }
+
             if (currentPlayer) {
                 currentPlayer = currentPlayer == PlayerOne ? PlayerTwo : PlayerOne;
             }else currentPlayer = PlayerOne;
+
+            if (currentPlayer.checkBot()) {
+                gameDiv.classList.add("cumputerPlaying");
+                let slow = setTimeout( 
+                                ()=>{
+                                    computerPlay( currentPlayer.getMark() )
+                                }, 500 
+                            );
+            }
+
         }
 
         const markTile = (position)=>{
@@ -238,7 +253,7 @@ const Game = (
         const announceGameEnd = ()=>{
             if (win == "win") {
                 announce("win");
-            } else {
+            }else{
                 announce("tie");
             }
             gameOn = false;
@@ -247,6 +262,120 @@ const Game = (
         const restartGame =  ()=>{
             initGame();
         }
+
+        const computerPlay = (mark)=>{
+
+            let position = getComputerPosition(mark);
+            let target = document.querySelector(`.tile[data-position="${position}"]`);
+            target.classList.add("played");
+            target.innerText = mark;
+            target.style.backgroundColor = Game.getPlayerColor();
+
+            Game.markTile(position);
+            if (Game.getGameStatus()) {
+                announce("turn");
+            }
+
+        }
+
+        const getComputerPosition = (mark)=>{
+            let board = GameBoard.board;
+            let playerMark = mark;
+            let oppositeMark = playerMark == "X" ? "O" : "X";
+
+            //if board empty return first tile position
+            if ( !( board.includes("X") || board.includes("O") ) ) {
+                return 0;
+            }
+
+            //get empty tiles
+            let emptyTiles = [];
+            for (let i = 0; i < board.length; i++) {
+                if (board[i] == "") {
+                    emptyTiles.push(i);
+                }
+            }
+
+            //if only one tile left return its position
+            if (emptyTiles.length == 1) {
+                return emptyTiles[0];
+            }
+
+            //if only one tile played return position 4 if available else fist empty tile posiyion
+            if ( emptyTiles.length == board.length -1 ) {
+                return board[4] == "" ? 4 : emptyTiles[0];
+            }
+
+            //check win or lost tile position in emptyTiles
+            const tempBoard = board;
+            for (let position of emptyTiles) {
+
+                //if player win with this position return position
+                tempBoard[position] = playerMark;
+                if ( GameBoard.checkWin(tempBoard) == "win") {
+                    return position;
+                }
+
+                //else if opposite win with this position return position to avoid
+                tempBoard[position] = oppositeMark;
+                if ( GameBoard.checkWin(tempBoard) == "win") {
+                    return position;
+                }
+
+                //else reinit tempBoard to default and continue with another empty Tile
+                tempBoard[position] = "";
+            }
+
+            //if no win or lost this time with empty positions check for good positions
+            //get player's positions in the board
+            const playerInBoard = [];
+            for (let i = 0; i < board.length; i++) {
+                if (board[i] == playerMark) {
+                    playerInBoard.push(i);
+                }
+            }
+            //get winnigBoard and search for best positions
+            let winBoard = GameBoard.winBoard;
+            let bestPositions = [];
+            for (let position of playerInBoard) {
+
+                //check player position in board inside winning lines
+                for (let line of winBoard) {
+                    //get position inside line
+                    let positionInLine = line.indexOf(position);
+
+                    //check empty positions in line to get for best position
+                    for (let i = 0; i < line.length; i++) {
+                        if (i == positionInLine) {
+                            continue;
+                        }
+
+                        //if position not empty so line will be incomplete check another line 
+                        if ( !emptyTiles.includes( line[i] ) ) {
+                            break;
+                        }
+
+                        //insert position in array 
+                        bestPositions.push( line[i] );
+                    }
+
+                    // check  if the two other positions in line are free and get last free position
+                    // before pass toanother line
+                    if (bestPositions.length == 2) {
+                        return bestPositions[1];
+                    }
+
+                    // init bestpositions before pass to another line
+                    bestPositions = [];
+                }
+
+                //init bestpositions before pass to another positon
+                bestPositions = [];
+            }
+
+            //else return fist empty tile
+            return emptyTiles[0];
+        };
 
         return {
             getGameStatus,newGame,restartGame,isProfileSet,markTile,

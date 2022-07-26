@@ -123,7 +123,7 @@ button:hover{
     gap: 5px;
 }
 
-.tiles{
+.tile{
     border: 2px solid #34495e;
     border-radius: 5px;
     display: grid;
@@ -132,9 +132,17 @@ button:hover{
     font-size: 5rem;
 }
 
-.tiles:hover{
+.tile:hover{
     border: 3px solid #34495e;
     cursor: pointer;
+}
+
+.cumputerPlaying{
+    pointer-events: none;
+}
+
+.cumputerPlaying:hover{
+    cursor: not-allowed !important;
 }
 
 .played:hover{
