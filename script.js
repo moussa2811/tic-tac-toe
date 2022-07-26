@@ -232,11 +232,11 @@ const Game = (
 
             if (currentPlayer.checkBot()) {
                 gameDiv.classList.add("cumputerPlaying");
-                let slow = setTimeout( 
-                                ()=>{
-                                    computerPlay( currentPlayer.getMark() )
-                                }, 500 
-                            );
+                setTimeout( 
+                    ()=>{
+                        computerPlay( currentPlayer.getMark() )
+                    }, 500 
+                );
             }
 
         }
