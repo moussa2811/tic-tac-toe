@@ -317,10 +317,13 @@ const Game = (
                 }
 
                 //else if opposite win with this position return position to avoid
-                tempBoard[position] = oppositeMark;
-                if ( GameBoard.checkWin(tempBoard) == "win") {
-                    return position;
+                else{
+                    tempBoard[position] = oppositeMark;
+                    if ( GameBoard.checkWin(tempBoard) == "win") {
+                        return position;
+                    }
                 }
+
 
                 //else reinit tempBoard to default and continue with another empty Tile
                 tempBoard[position] = "";
@@ -333,6 +336,7 @@ const Game = (
                 if (board[i] == playerMark) {
                     playerInBoard.push(i);
                 }
+
             }
             //get winnigBoard and search for best positions
             let winBoard = GameBoard.winBoard;
@@ -362,7 +366,7 @@ const Game = (
                     // check  if the two other positions in line are free and get last free position
                     // before pass toanother line
                     if (bestPositions.length == 2) {
-                        return bestPositions[1];
+                        return bestPositions[0];
                     }
 
                     // init bestpositions before pass to another line
