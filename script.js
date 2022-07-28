@@ -363,8 +363,8 @@ const Game = (
                         bestPositions.push( line[i] );
                     }
 
-                    // check  if the two other positions in line are free and get last free position
-                    // before pass toanother line
+                    // check  if the two other positions in line are free and get fisrt free position
+                    // else pass to another line
                     if (bestPositions.length == 2) {
                         return bestPositions[0];
                     }
